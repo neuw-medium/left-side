@@ -1,0 +1,8 @@
+{
+    "profile": "default",
+    "prod": false,
+    "port": 30001,
+    "name": "left-side",
+    "full_host": "http://localhost:30001",
+    "jwks_uri": "http://localhost:30001/.well-known/jwks"
+}
