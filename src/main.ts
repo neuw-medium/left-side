@@ -69,6 +69,7 @@ async function bootstrap() {
             origin: '*'
         });
     }
+    app.getHttpAdapter().getInstance().disable('x-powered-by');
     await app.listen(config.port);
 
     

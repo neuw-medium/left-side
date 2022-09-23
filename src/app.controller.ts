@@ -1,4 +1,4 @@
-import {Controller, Get, Logger, Post, Query} from '@nestjs/common';
+import {Controller, Get, HttpCode, HttpStatus, Logger, Post, Query} from '@nestjs/common';
 import { AppService } from './app.service';
 import logger from "./utils/logger";
 import JwtUtil from "./utils/jwt.util";
@@ -12,12 +12,11 @@ export class AppController {
     
     }
     
+    @HttpCode(HttpStatus.OK)
     @Get('/user')
     async getUser(@Query("id") id: string): Promise<any> {
         this.logger.log(`request param id = ${id}`);
         let token = await JwtUtil.createJWS();
-        return {
-            token: token
-        };
+        return this.appService.getUserPIIData(token);
     }
 }

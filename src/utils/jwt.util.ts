@@ -1,8 +1,9 @@
-import { JWK, JWS } from "node-jose";
+import {JWE, JWK, JWS, JWA} from "node-jose";
 import * as privateJwks from '../resources/jwks-private-with-ec.json';
 import * as jose from 'jose';
 import {FlattenedJWSInput, GetKeyFunction, JWSHeaderParameters} from "jose/dist/types/types";
 import EnvConfig from "./env-config";
+import {decodeJwt} from "jose";
 
 export default class JwtUtil {
     
@@ -20,7 +21,6 @@ export default class JwtUtil {
         }, ecKeystore.all()).update({
         
         })*/
-        let jwks: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput> = jose.createLocalJWKSet(privateJwks);
     
         /*const jwt = await new jose.SignJWT({ 'urn:example:claim': true })
             .setProtectedHeader({ alg: 'ES256' })
@@ -49,6 +49,23 @@ export default class JwtUtil {
             .final();
     
         return token.toString();
+    }
+    
+    static async decryptData(token: string): Promise<any> {
+        
+        let decodeJwtHeader = jose.decodeProtectedHeader(token);
+        let kid = decodeJwtHeader.kid;
+    
+        let ecKeys = privateJwks.keys.filter(k => {
+            return k.kid === kid;
+        });
+    
+    
+        let ecKeystore: JWK.KeyStore = await JWK.asKeyStore(ecKeys);
+        
+        let result:JWE.DecryptResult = await JWE.createDecrypt(ecKeystore).decrypt(token);
+        
+        return result.payload;
     }
     
 }
